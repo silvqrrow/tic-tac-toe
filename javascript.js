@@ -25,6 +25,22 @@ const Gameboard = (function () {
   const getColumnValues = (columnIndex) =>
     board.map((row) => row[columnIndex].getValue());
 
+  const getFirstDiagonalValues = () => {
+    const values = [];
+    for (let i = 0; i < rows; i++) {
+      values.push(board[i][i].getValue());
+    }
+    return values;
+  };
+
+  const getSecondDiagonalValues = () => {
+    const values = [];
+    for (let i = 0; i < rows; i++) {
+      values.push(board[i][columns - 1 - i].getValue());
+    }
+    return values;
+  };
+
   const printBoard = () => {
     let boardString = "";
     for (let i = 0; i < rows; i++) {
@@ -37,7 +53,15 @@ const Gameboard = (function () {
     console.log(boardString);
   };
 
-  return { getBoard, dropToken, printBoard, getRowValues, getColumnValues };
+  return {
+    getBoard,
+    dropToken,
+    printBoard,
+    getRowValues,
+    getColumnValues,
+    getFirstDiagonalValues,
+    getSecondDiagonalValues,
+  };
 })();
 
 function Cell() {
@@ -100,6 +124,14 @@ const GameController = function () {
     );
   };
 
+  const diagonalWin = () => {
+    const playerToken = getActivePlayer().getToken();
+    return (
+      allTokensMatch(Gameboard.getFirstDiagonalValues(), playerToken) ||
+      allTokensMatch(Gameboard.getSecondDiagonalValues(), playerToken)
+    );
+  };
+
   const playRound = (row, column) => {
     if (gameOver) {
       console.log("Game over. No more moves allowed.");
@@ -112,15 +144,8 @@ const GameController = function () {
     Gameboard.dropToken(row, column, getActivePlayer().getToken());
 
     /* Check for winner */
-    if (rowWin()) {
-      console.log(`${getActivePlayer().getName()} wins the row!`);
-      gameOver = true;
-      Gameboard.printBoard();
-      return;
-    }
-
-    if (columnWin()) {
-      console.log(`${getActivePlayer().getName()} wins the column!`);
+    if (rowWin() || columnWin() || diagonalWin()) {
+      console.log(`${getActivePlayer().getName()} wins!`);
       gameOver = true;
       Gameboard.printBoard();
       return;
@@ -138,6 +163,7 @@ const GameController = function () {
     getActivePlayer,
     rowWin,
     columnWin,
+    diagonalWin,
   };
 };
 

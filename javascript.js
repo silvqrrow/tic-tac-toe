@@ -130,12 +130,13 @@ const GameController = function () {
 
     Gameboard.dropToken(row, column, getActivePlayer().getToken());
 
-    /* Check for winner */
+    // Check for win
     if (rowWin() || columnWin() || diagonalWin()) {
       gameOver = true;
       return "win";
     }
 
+    // Check for tie
     if (Tie()) {
       gameOver = true;
       return "tie";
@@ -192,6 +193,11 @@ function ScreenController() {
         cellButton.addEventListener("click", (e) => {
           const row = e.target.dataset.row;
           const column = e.target.dataset.column;
+          // End the event listener if the cell is clicked has a value
+          if (cell.getValue() !== 0) {
+            return;
+          }
+          // Get result
           const result = game.playRound(row, column);
           if (result == "continue") {
             updateScreen();

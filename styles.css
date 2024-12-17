@@ -1,0 +1,27 @@
+body {
+  background-color: #dddddd;
+}
+
+.title {
+  text-align: center;
+  font-family: "Roboto", sans-serif;
+}
+.grid__container {
+  height: 500px;
+  width: 500px;
+  border: 10px solid #333333;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.grid__row {
+  display: flex;
+  flex: 1;
+}
+
+.grid__square {
+  border: 1px solid #333333;
+  flex: 1;
+  cursor: pointer;
+}

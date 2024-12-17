@@ -173,3 +173,28 @@ const GameController = function () {
 
 // Start the game
 const game = GameController();
+
+/* CREATION GRID */
+const container = document.querySelector(".grid__container");
+
+const createGrid = () => {
+  // Create rows until the desired size
+  for (let rows = 0; rows < 3; rows++) {
+    const row = document.createElement("div");
+    row.classList.add("grid__row");
+
+    // Fill in each row with the squares
+    for (let squares = 0; squares < 3; squares++) {
+      const square = document.createElement("button");
+      square.classList.add("grid__square");
+      row.appendChild(square);
+    }
+    container.appendChild(row);
+  }
+};
+
+const deleteGrid = () => {
+  container.replaceChildren();
+};
+
+createGrid();

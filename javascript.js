@@ -1,3 +1,6 @@
+/* GAME SETUP & LOGIC */
+
+/* Board Functions */
 const Gameboard = (function () {
   const rows = 3;
   const columns = 3;
@@ -91,6 +94,7 @@ function player(name, token) {
   return { getName, getToken };
 }
 
+/* Game logic function */
 const GameController = function () {
   const Players = [player("Jasmine", "X"), player("Ovett", "O")];
   let activePlayer = Players[0];

@@ -44,22 +44,9 @@ const Gameboard = (function () {
     return values;
   };
 
-  const printBoard = () => {
-    let boardString = "";
-    for (let i = 0; i < rows; i++) {
-      let row = "";
-      for (let j = 0; j < columns; j++) {
-        row += board[i][j].getValue() + " ";
-      }
-      boardString += row.trim() + "\n";
-    }
-    console.log(boardString);
-  };
-
   return {
     getBoard,
     dropToken,
-    printBoard,
     getRowValues,
     getColumnValues,
     getFirstDiagonalValues,
@@ -109,11 +96,6 @@ const GameController = function () {
   const allTokensMatch = (values, token) =>
     values.every((value) => value === token);
 
-  const printNewRound = () => {
-    Gameboard.printBoard();
-    console.log(`${getActivePlayer().getName()}'s turn.`);
-  };
-
   const rowWin = () => {
     const playerToken = getActivePlayer().getToken();
     return [0, 1, 2].some((rowIndex) =>
@@ -143,25 +125,18 @@ const GameController = function () {
 
   const playRound = (row, column) => {
     if (gameOver) {
-      console.log("Game over. No more moves allowed.");
       return;
     }
 
-    console.log(
-      `Dropping ${getActivePlayer().getName()}'s ${getActivePlayer().getToken()} into ${row}, ${column}.`
-    );
     Gameboard.dropToken(row, column, getActivePlayer().getToken());
 
     /* Check for winner */
     if (rowWin() || columnWin() || diagonalWin()) {
-      console.log(`${getActivePlayer().getName()} wins!`);
       gameOver = true;
-      Gameboard.printBoard();
       return "win";
     }
 
     if (Tie()) {
-      console.log("Tie!");
       gameOver = true;
       return "tie";
     }

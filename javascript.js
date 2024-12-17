@@ -136,6 +136,11 @@ const GameController = function () {
     );
   };
 
+  const Tie = () => {
+    const board = Gameboard.getBoard();
+    return board.every((row) => row.every((cell) => cell.getValue() !== 0));
+  };
+
   const playRound = (row, column) => {
     if (gameOver) {
       console.log("Game over. No more moves allowed.");
@@ -152,15 +157,18 @@ const GameController = function () {
       console.log(`${getActivePlayer().getName()} wins!`);
       gameOver = true;
       Gameboard.printBoard();
-      return;
+      return "win";
+    }
+
+    if (Tie()) {
+      console.log("Tie!");
+      gameOver = true;
+      return "tie";
     }
 
     switchPlayerTurn();
-    printNewRound();
+    return "continue";
   };
-
-  /* Print Initial Round */
-  printNewRound();
 
   return {
     playRound,
@@ -168,6 +176,7 @@ const GameController = function () {
     rowWin,
     columnWin,
     diagonalWin,
+    Tie,
   };
 };
 
@@ -175,26 +184,63 @@ const GameController = function () {
 const game = GameController();
 
 /* CREATION GRID */
-const container = document.querySelector(".grid__container");
+function ScreenController() {
+  const playerTurnDiv = document.querySelector(".turn");
+  const boardDiv = document.querySelector(".board");
 
-const createGrid = () => {
-  // Create rows until the desired size
-  for (let rows = 0; rows < 3; rows++) {
-    const row = document.createElement("div");
-    row.classList.add("grid__row");
+  const updateScreen = () => {
+    // Clear the board
+    boardDiv.textContent = "";
 
-    // Fill in each row with the squares
-    for (let squares = 0; squares < 3; squares++) {
-      const square = document.createElement("button");
-      square.classList.add("grid__square");
-      row.appendChild(square);
-    }
-    container.appendChild(row);
-  }
-};
+    // Get the newest version of the board and player turn
+    const board = Gameboard.getBoard();
+    const activePlayer = game.getActivePlayer();
 
-const deleteGrid = () => {
-  container.replaceChildren();
-};
+    // Display player's turn
+    playerTurnDiv.textContent = `${activePlayer.getName()}'s turn...`;
 
-createGrid();
+    // Render board rows and squares
+    board.forEach((row, rowIndex) => {
+      // Create a div for each row
+      const rowDiv = document.createElement("div");
+      rowDiv.classList.add("grid__row");
+
+      row.forEach((cell, columnIndex) => {
+        // Create a button for each cell
+        const cellButton = document.createElement("button");
+        cellButton.classList.add("cell");
+        cellButton.textContent = cell.getValue() === 0 ? "" : cell.getValue();
+        cellButton.dataset.row = rowIndex;
+        cellButton.dataset.column = columnIndex;
+
+        // Add click event listener to handle the move
+        cellButton.addEventListener("click", (e) => {
+          const row = e.target.dataset.row;
+          const column = e.target.dataset.column;
+          const result = game.playRound(row, column);
+          if (result == "continue") {
+            updateScreen();
+          } else if (result == "win") {
+            updateScreen();
+            playerTurnDiv.textContent = `${activePlayer.getName()} wins!`;
+          } else if (result == "tie") {
+            updateScreen();
+            playerTurnDiv.textContent = `It's a tie!`;
+          }
+        });
+
+        // Append the cell button to the row div
+        rowDiv.appendChild(cellButton);
+      });
+
+      // Append the row div to the board div
+      boardDiv.appendChild(rowDiv);
+    });
+  };
+
+  // Initial screen update
+  updateScreen();
+}
+
+// Initialize the ScreenController
+ScreenController();

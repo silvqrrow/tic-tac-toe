@@ -2,11 +2,17 @@ body {
   background-color: #dddddd;
 }
 
-.title {
+.title,
+.turn {
   text-align: center;
   font-family: "Roboto", sans-serif;
 }
-.grid__container {
+
+.turn {
+  font-size: 1.5rem;
+}
+
+.board {
   height: 500px;
   width: 500px;
   border: 10px solid #333333;
@@ -20,8 +26,8 @@ body {
   flex: 1;
 }
 
-.grid__square {
-  border: 1px solid #333333;
+.cell {
   flex: 1;
-  cursor: pointer;
+  padding: 2rem;
+  font-size: 4rem;
 }

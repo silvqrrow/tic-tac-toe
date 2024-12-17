@@ -4,13 +4,19 @@
 const Gameboard = (function () {
   const rows = 3;
   const columns = 3;
-  const board = [];
-  for (let i = 0; i < rows; i++) {
-    board[i] = [];
-    for (let j = 0; j < columns; j++) {
-      board[i].push(Cell());
+  let board = [];
+
+  const initializeBoard = () => {
+    board = [];
+    for (let i = 0; i < rows; i++) {
+      board[i] = [];
+      for (let j = 0; j < columns; j++) {
+        board[i].push(Cell());
+      }
     }
-  }
+  };
+
+  initializeBoard();
 
   const dropToken = (row, column, player) => {
     if (board[row][column].getValue() == 0) {
@@ -44,6 +50,10 @@ const Gameboard = (function () {
     return values;
   };
 
+  const resetBoard = () => {
+    initializeBoard();
+  };
+
   return {
     getBoard,
     dropToken,
@@ -51,6 +61,7 @@ const Gameboard = (function () {
     getColumnValues,
     getFirstDiagonalValues,
     getSecondDiagonalValues,
+    resetBoard,
   };
 })();
 
@@ -151,6 +162,12 @@ const GameController = function () {
     return "continue";
   };
 
+  const resetGame = () => {
+    Gameboard.resetBoard();
+    activePlayer = Players[0];
+    gameOver = false;
+  };
+
   return {
     playRound,
     getActivePlayer,
@@ -160,16 +177,18 @@ const GameController = function () {
     Tie,
     defaultPlayerOne,
     defaultPlayerTwo,
+    resetGame,
   };
 };
 
 // Start the game
-const game = GameController();
+let game = GameController();
 
 /* CREATION GRID */
 function ScreenController() {
   const playerTurnDiv = document.querySelector(".turn");
   const boardDiv = document.querySelector(".board");
+  const restartButton = document.getElementById("restartButton");
 
   const playerModal = document.querySelector(".dialog");
   const playerOneInput = document.getElementById("playerOne");
@@ -183,6 +202,12 @@ function ScreenController() {
     game.defaultPlayerOne.setName(playerOneName);
     game.defaultPlayerTwo.setName(playerTwoName);
     playerModal.close();
+    updateScreen();
+  });
+
+  restartButton.addEventListener("click", function () {
+    game.resetGame();
+    playerModal.showModal();
     updateScreen();
   });
 

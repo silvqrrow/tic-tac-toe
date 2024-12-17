@@ -72,18 +72,23 @@ function Cell() {
 }
 
 function player(name, token) {
-  const playerName = name;
+  let playerName = name;
   const playerToken = token;
 
   const getName = () => playerName;
   const getToken = () => playerToken;
+  const setName = (name) => {
+    playerName = name;
+  };
 
-  return { getName, getToken };
+  return { getName, getToken, setName };
 }
 
 /* Game logic function */
 const GameController = function () {
-  const Players = [player("Jasmine", "X"), player("Ovett", "O")];
+  let defaultPlayerOne = player("Player 1", "X");
+  let defaultPlayerTwo = player("Player 2", "O");
+  const Players = [defaultPlayerOne, defaultPlayerTwo];
   let activePlayer = Players[0];
   let gameOver = false;
 
@@ -153,6 +158,8 @@ const GameController = function () {
     columnWin,
     diagonalWin,
     Tie,
+    defaultPlayerOne,
+    defaultPlayerTwo,
   };
 };
 
@@ -163,6 +170,21 @@ const game = GameController();
 function ScreenController() {
   const playerTurnDiv = document.querySelector(".turn");
   const boardDiv = document.querySelector(".board");
+
+  const playerModal = document.querySelector(".dialog");
+  const playerOneInput = document.getElementById("playerOne");
+  const playerTwoInput = document.getElementById("playerTwo");
+  const submitNamesButton = document.querySelector(".submit");
+
+  submitNamesButton.addEventListener("click", function (event) {
+    event.preventDefault();
+    const playerOneName = playerOneInput.value;
+    const playerTwoName = playerTwoInput.value;
+    game.defaultPlayerOne.setName(playerOneName);
+    game.defaultPlayerTwo.setName(playerTwoName);
+    playerModal.close();
+    updateScreen();
+  });
 
   const updateScreen = () => {
     // Clear the board
@@ -218,7 +240,7 @@ function ScreenController() {
       boardDiv.appendChild(rowDiv);
     });
   };
-
+  playerModal.showModal();
   // Initial screen update
   updateScreen();
 }

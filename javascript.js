@@ -73,7 +73,7 @@ function Cell() {
     value = player;
   };
 
-  // How we will retrieve the current value of this cell through closure
+  // Retrieve the current value of this cell through closure
   const getValue = () => value;
 
   return {
@@ -207,7 +207,15 @@ function ScreenController() {
     updateScreen();
   });
   restartButton.addEventListener("click", function () {
+    // Reset game state
     game.resetGame();
+
+    // Reset player names
+    playerOneInput.value = "";
+    playerTwoInput.value = "";
+    playerOneInput.placeholder = "Player One";
+    playerTwoInput.placeholder = "Player Two";
+
     playerModal.showModal();
     updateScreen();
   });

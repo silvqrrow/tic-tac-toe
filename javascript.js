@@ -97,8 +97,8 @@ function player(name, token) {
 
 /* Game logic function */
 const GameController = function () {
-  let defaultPlayerOne = player("Player 1", "X");
-  let defaultPlayerTwo = player("Player 2", "O");
+  let defaultPlayerOne = player("Player One", "X");
+  let defaultPlayerTwo = player("Player Two", "O");
   const Players = [defaultPlayerOne, defaultPlayerTwo];
   let activePlayer = Players[0];
   let gameOver = false;
@@ -197,14 +197,15 @@ function ScreenController() {
 
   submitNamesButton.addEventListener("click", function (event) {
     event.preventDefault();
-    const playerOneName = playerOneInput.value;
-    const playerTwoName = playerTwoInput.value;
+    const playerOneName = playerOneInput.value || playerOneInput.placeholder;
+    const playerTwoName = playerTwoInput.value || playerTwoInput.placeholder;
     game.defaultPlayerOne.setName(playerOneName);
     game.defaultPlayerTwo.setName(playerTwoName);
+    playerOneInput.placeholder = playerOneName;
+    playerTwoInput.placeholder = playerTwoName;
     playerModal.close();
     updateScreen();
   });
-
   restartButton.addEventListener("click", function () {
     game.resetGame();
     playerModal.showModal();

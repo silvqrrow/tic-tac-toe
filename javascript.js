@@ -16,7 +16,14 @@ const Gameboard = (function () {
       return;
     }
   };
+
   const getBoard = () => board;
+
+  const getRowValues = (rowIndex) =>
+    board[rowIndex].map((cell) => cell.getValue());
+
+  const getColumnValues = (columnIndex) =>
+    board.map((row) => row[columnIndex].getValue());
 
   const printBoard = () => {
     let boardString = "";
@@ -30,7 +37,7 @@ const Gameboard = (function () {
     console.log(boardString);
   };
 
-  return { getBoard, dropToken, printBoard };
+  return { getBoard, dropToken, printBoard, getRowValues, getColumnValues };
 })();
 
 function Cell() {
@@ -61,10 +68,9 @@ function player(name, token) {
 }
 
 const GameController = function () {
-  // GameController logic here
   const Players = [player("Jasmine", "X"), player("Ovett", "O")];
-
   let activePlayer = Players[0];
+  let gameOver = false;
 
   const switchPlayerTurn = () => {
     activePlayer = activePlayer === Players[0] ? Players[1] : Players[0];
@@ -72,44 +78,54 @@ const GameController = function () {
 
   const getActivePlayer = () => activePlayer;
 
+  const allTokensMatch = (values, token) =>
+    values.every((value) => value === token);
+
   const printNewRound = () => {
     Gameboard.printBoard();
     console.log(`${getActivePlayer().getName()}'s turn.`);
   };
 
   const rowWin = () => {
-    const firstRow = Gameboard.getBoard()[0];
-    const secondRow = Gameboard.getBoard()[1];
-    const thirdRow = Gameboard.getBoard()[2];
-    /* Extract Cells in the Row */
-    const firstRowValues = firstRow.map((cell) => cell.getValue());
-    const secondRowValues = secondRow.map((cell) => cell.getValue());
-    const thirdRowValues = thirdRow.map((cell) => cell.getValue());
-    /* Check if it fits the current player token*/
-    const firstRowCheck = firstRowValues.every(
-      (value) => value == getActivePlayer().getToken()
+    const playerToken = getActivePlayer().getToken();
+    return [0, 1, 2].some((rowIndex) =>
+      allTokensMatch(Gameboard.getRowValues(rowIndex), playerToken)
     );
-    const secondRowCheck = secondRowValues.every(
-      (value) => value == getActivePlayer().getToken()
-    );
-    const thirdRowCheck = thirdRowValues.every(
-      (value) => value == getActivePlayer().getToken()
-    );
+  };
 
-    return firstRowCheck || secondRowCheck || thirdRowCheck;
+  const columnWin = () => {
+    const playerToken = getActivePlayer().getToken();
+    return [0, 1, 2].some((columnIndex) =>
+      allTokensMatch(Gameboard.getColumnValues(columnIndex), playerToken)
+    );
   };
 
   const playRound = (row, column) => {
+    if (gameOver) {
+      console.log("Game over. No more moves allowed.");
+      return;
+    }
+
     console.log(
       `Dropping ${getActivePlayer().getName()}'s ${getActivePlayer().getToken()} into ${row}, ${column}.`
     );
     Gameboard.dropToken(row, column, getActivePlayer().getToken());
 
-    /* TODO: check for winner*/
+    /* Check for winner */
     if (rowWin()) {
       console.log(`${getActivePlayer().getName()} wins the row!`);
+      gameOver = true;
+      Gameboard.printBoard();
       return;
     }
+
+    if (columnWin()) {
+      console.log(`${getActivePlayer().getName()} wins the column!`);
+      gameOver = true;
+      Gameboard.printBoard();
+      return;
+    }
+
     switchPlayerTurn();
     printNewRound();
   };
@@ -121,6 +137,7 @@ const GameController = function () {
     playRound,
     getActivePlayer,
     rowWin,
+    columnWin,
   };
 };
 
